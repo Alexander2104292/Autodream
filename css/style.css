@@ -1,0 +1,309 @@
+/* =========================================================
+   BASIS
+   ========================================================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: system-ui, sans-serif; }
+body { background: #d7c6a5; }
+
+/* =========================================================
+   TWEAK-SECTION (PAS HIER ALLES AAN)
+   ========================================================= */
+:root{
+  /* --- KAST --- */
+  --shelf-h: 58vh;              /* hoogte van de kast */
+  --shelf-bottom: 10vh;          /* afstand voet kast tot onderrand */
+
+  /* --- PLANK --- */
+  --plank-gap: 1vh;             /* ruimte tussen kast-top en plank */
+  --plank-w: min(50vw, 550px);  /* breedte plank */
+  --plank-thick: 16px;          /* dikte plank */
+
+  /* --- FOTOLIJSTEN (linksboven) --- */
+  --frames-top: 13vh;
+  --frames-left: 1vw;
+  --frame-size: min(6vw, 100px);
+  --frame-gap: 2vw;
+
+  /* --- RAPPORT (op de plank) --- */
+  --report-w: min(10vw, 180px);
+  --report-gap: 0.4vh;
+  --report-tilt: -2deg;
+  --report-shift: -13vw;
+  --report-lift: -1vh;
+
+  /* --- WERELDKAART (rechts aan de muur) --- */
+  --map-w: min(30vw, 600px);
+  --map-top: 13vh;
+  --map-right: 1vw;
+  --map-tilt: 0deg;
+  --map-shadow: 0 10px 18px rgba(0,0,0,.22);
+
+  /* --- LOGO (gecentreerd boven) --- */
+  --logo-w: min(10vw, 200px);   /* breedte logo */
+  --logo-top: 3vh;              /* afstand vanaf bovenrand */
+  --logo-shift: 0vw;            /* links/rechts nudge */
+  --logo-tilt: 0deg;            /* rotatie logo zelf */
+  --logo-shadow: 0 8px 14px rgba(0,0,0,.22);
+
+  /* --- HANG-EFFECT voor het logo --- */
+  --hang-string-l: 1vh;         /* lengte van het touwtje */
+  --hang-string-w: 2px;         /* dikte van het touwtje */
+  --hang-string-color: rgba(0,0,0,.35);
+  --hang-string-angle: 0deg;    /* touwtje iets scheef? bv. 4deg/-4deg */
+
+  --pin-size: 14px;             /* diameter van de pin/spijker */
+  --pin-color: #2f2f2f;         /* kleur pin */
+  --pin-shadow: 0 2px 3px rgba(0,0,0,.35);
+
+  /* Masking-tape look (alleen als .logo-wrap.tape gebruikt wordt) */
+  --tape-w: 56px;               /* breedte tape strook */
+  --tape-h: 14px;               /* hoogte tape strook */
+  --tape-color: #eadfbf;        /* kleur tape */
+  --tape-shadow: 0 2px 4px rgba(0,0,0,.25);
+
+  /* --- VLOER/MUUR --- */
+  --tile: 80px;
+  --wall-height: 90vh;
+  --floor-tilt: 63deg;
+  --floor-down: -6vh;
+
+  /* --- Schaduwen/looks --- */
+  --plank-shadow: 0 4px 8px rgba(0,0,0,.22);
+  --plank-highlight: inset 0 1px 2px rgba(255,255,255,.3);
+}
+
+/* =========================================================
+   SCENE & ACHTERGROND
+   ========================================================= */
+.scene { position: relative; width: 100%; height: 100vh; overflow: hidden; }
+
+.wall{
+  position: absolute; inset: 0 0 var(--wall-height) 0;
+  background: linear-gradient(180deg,#f0debb 0%, #d8c19a 55%, #c3a776 100%);
+  z-index: 0;
+}
+
+.floor{
+  position: absolute; left: 0; right: 0; bottom: var(--floor-down);
+  height: calc(100vh - var(--wall-height) + 14vh);
+  transform: perspective(800px) rotateX(var(--floor-tilt));
+  transform-origin: top center;
+  background-color: #e29a63;
+  background-image:
+    linear-gradient(0deg, transparent 96%, rgba(0,0,0,.28) 97%),
+    linear-gradient(90deg, transparent 96%, rgba(0,0,0,.28) 97%);
+  background-size: var(--tile) var(--tile);
+  box-shadow: 0 -26px 48px rgba(0,0,0,.22) inset;
+  z-index: 1;
+}
+
+.join{
+  position: absolute; left: 0; right: 0;
+  bottom: calc(var(--wall-height) - 1px);
+  height: 2px; background: rgba(0,0,0,.28); filter: blur(.5px);
+  z-index: 2;
+}
+
+/* =========================================================
+   LOGO + HANGER (boven, gecentreerd)
+   ========================================================= */
+/* Wrapper positioneert het geheel en tekent touw + pin met pseudo-elementen */
+.logo-wrap{
+  position: absolute;
+  top: var(--logo-top);                          /* <<< HOOGTE */
+  left: calc(50% + var(--logo-shift));           /* <<< LINKS/RECHTS nudge */
+  transform: translateX(-50%);
+  z-index: 5;
+  display: inline-block;
+  /* optioneel: heel licht wiebelen bij hover om het 'hangen' te suggereren */
+}
+.logo{
+  width: var(--logo-w);                           /* <<< BREEDTE LOGO */
+  height: auto;
+  transform: rotate(var(--logo-tilt));
+  filter: drop-shadow(var(--logo-shadow));
+}
+
+/* Touwtje */
+.logo-wrap::before{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--hang-string-l));
+  width: var(--hang-string-w);                    /* <<< DIKTE TOUW */
+  height: var(--hang-string-l);                   /* <<< LENGTE TOUW */
+  background: var(--hang-string-color);
+  transform: translateX(-50%) rotate(var(--hang-string-angle));
+  transform-origin: bottom center;
+  border-radius: 2px;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,.25);
+}
+
+/* Pin/spijker bovenaan */
+.logo-wrap::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--hang-string-l) - var(--pin-size)/2);
+  width: var(--pin-size);                          /* <<< GROOTTE PIN */
+  height: var(--pin-size);
+  transform: translateX(-50%);
+  background: var(--pin-color);
+  border-radius: 50%;
+  box-shadow: var(--pin-shadow);
+}
+
+/* --- Alternatief: masking tape --- */
+/* Gebruik <div class="logo-wrap tape"> om deze stijl te krijgen */
+.logo-wrap.tape::before,
+.logo-wrap.tape::after{
+  content: "";
+  position: absolute;
+  width: var(--tape-w); height: var(--tape-h);     /* <<< TAPE FORMAAT */
+  background: var(--tape-color);
+  box-shadow: var(--tape-shadow);
+  opacity: .92;
+  top: -10px;
+}
+.logo-wrap.tape::before{
+  left: 14%;
+  transform: rotate(-12deg);
+}
+.logo-wrap.tape::after{
+  right: 14%;
+  transform: rotate(10deg);
+}
+
+/* =========================================================
+   FOTOLIJSTEN (linksboven)
+   ========================================================= */
+.frames{
+  position: absolute;
+  top: var(--frames-top);
+  left: var(--frames-left);
+  display: flex; gap: var(--frame-gap);
+  align-items: center; justify-content: flex-start;
+  z-index: 4;
+}
+.frame{
+  width: var(--frame-size);
+  height: auto; object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.25));
+}
+
+/* =========================================================
+   WERELDKAART (RECHTS AAN DE MUUR)
+   ========================================================= */
+.worldmap{
+  position: absolute;
+  top: var(--map-top);                    /* HOOGTE */
+  right: var(--map-right);               /* AFSTAND RECHTS */
+  width: var(--map-w);                   /* BREEDTE */
+  height: auto;
+  transform: rotate(var(--map-tilt));    /* ROTATIE */
+  transform-origin: center;
+  object-fit: contain;
+  filter: drop-shadow(var(--map-shadow));
+  z-index: 4;
+}
+
+/* =========================================================
+   PLANK
+   ========================================================= */
+.plank{
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--shelf-bottom) + var(--shelf-h) + var(--plank-gap));
+  width: var(--plank-w);
+  height: var(--plank-thick);
+  background: linear-gradient(to bottom, #cfa373, #b57e47);
+  border-radius: 4px;
+  box-shadow: var(--plank-shadow), var(--plank-highlight);
+  z-index: 4;
+}
+
+/* =========================================================
+   RAPPORT (op de plank)
+   ========================================================= */
+.report{
+  position: absolute;
+  left: calc(50% + var(--report-shift));   /* horizontaal schuiven */
+  transform: translateX(-50%) rotate(var(--report-tilt));
+  bottom: calc(
+    var(--shelf-bottom) + var(--shelf-h) + var(--plank-gap) + var(--plank-thick) + var(--report-gap) + var(--report-lift)
+  );
+  width: var(--report-w);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,.25));
+  z-index: 5;
+}
+
+/* =========================================================
+   KAST (midden)
+   ========================================================= */
+.kast-wrapper{
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: var(--shelf-bottom);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 3;
+}
+.kast{
+  height: var(--shelf-h);
+  width: auto; object-fit: contain;
+  filter:
+    drop-shadow(0 12px 16px rgba(0,0,0,.30))
+    drop-shadow(0 2px 3px rgba(0,0,0,.15));
+}
+
+/* =========================================================
+   RESPONSIVE (optioneel)
+   ========================================================= */
+@media (max-width: 800px){
+  :root{
+    --shelf-h: 52vh;
+    --plank-w: 72vw;
+    --plank-gap: 0.8vh;
+    --frame-size: min(16vw, 120px);
+    --frame-gap: 3vw;
+    --frames-top: 8vh;
+    --frames-left: 6vw;
+    --tile: 64px;
+
+    --report-w: min(36vw, 240px);
+
+    --map-w: min(50vw, 560px);
+    --map-top: 10vh;
+    --map-right: 5vw;
+
+    --logo-w: min(22vw, 200px);
+    --logo-top: 2.5vh;
+
+    --hang-string-l: 5vh;  /* korter touwtje op tablet */
+    --pin-size: 12px;
+  }
+}
+
+@media (max-width: 560px){
+  :root{
+    --shelf-h: 48vh;
+    --plank-w: 78vw;
+    --plank-gap: 0.8vh;
+    --frame-size: min(22vw, 110px);
+    --frame-gap: 3.5vw;
+    --frames-top: 7vh;
+    --frames-left: 5vw;
+    --tile: 56px;
+
+    --report-w: min(48vw, 220px);
+
+    --map-w: min(70vw, 520px);
+    --map-top: 12vh;
+    --map-right: 4vw;
+
+    --logo-w: min(32vw, 180px);
+    --logo-top: 2.8vh;
+
+    --hang-string-l: 4.2vh;
+    --pin-size: 11px;
+  }
+}
