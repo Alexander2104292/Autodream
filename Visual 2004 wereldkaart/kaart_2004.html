@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brutowinst per land (2004)</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; text-align:center;">
+
+<div id="kaart" style="width:90%;max-width:1200px;height:700px;margin:auto;"></div>
+
+<script>
+  const landen = ['USA', 'France', 'Spain', 'New Zealand', 'UK', 'Australia', 'Italy', 'Japan', 'Germany', 'Canada', 'Switzerland', 'Denmark', 'Singapore', 'Sweden', 'Finland', 'Belgium', 'Norway', 'Austria', 'Ireland', 'Norway  ', 'Philippines'];
+  const brutowinst = [614370.08, 211528.15, 175328.56, 94390.14, 93425.03, 78176.66, 73353.47, 56004.59, 51408.35, 45103.04, 43393.75, 42304.91, 41674.04, 40557.66, 32674.53, 27591.91, 21894.07, 21358.43, 19588.29, 18582.02, 6673.46];
+
+  const data = [{ 
+    type: 'choropleth',
+    locationmode: 'country names',
+    locations: landen,
+    z: brutowinst,
+    colorscale: [
+      [0, 'lightgreen'],
+      [1, 'darkgreen']
+    ],
+    autocolorscale: false,
+    zmin: Math.min(...brutowinst),
+    zmax: Math.max(...brutowinst),
+    colorbar: { title: 'Brutowinst (€)' }
+  }];
+
+  const layout = {
+    title: {
+      text: 'Wereldkaart van brutowinst per land (2004)',
+      font: { size: 24 }
+    },
+    geo: {
+      showframe: false,
+      showcoastlines: true,
+      projection: { type: 'natural earth' },
+      bgcolor: 'white'
+    }
+  };
+
+  Plotly.newPlot('kaart', data, layout, {responsive: true});
+</script>
+</body>
+</html>
