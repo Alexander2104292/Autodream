@@ -1,0 +1,6 @@
+year;customerNumber;customerName;city;country;GrossSalesValue;NetSalesValue;Discount;COGS;GrossMargin
+2003;141;Euro+ Shopping Channel;Madrid;Spain; 211001.39 ; 189840.15 ; 21161.24 ; 116037.27 ; 73802.88 
+2003;124;Mini Gifts Distributors Ltd.;San Rafael;USA; 185973.97 ; 167783.08 ; 18190.89 ; 100805.85 ; 66977.23 
+2003;148;Dragon Souveniers, Ltd.;Singapore;Singapore; 166744.22 ; 150123.15 ; 16621.07 ; 91184.73 ; 58938.42 
+2003;151;Muscle Machine Inc;NYC;USA; 128104.76 ; 117634.88 ; 10469.88 ; 69534.53 ; 48100.35 
+2003;321;Corporate Gift Ideas Co.;San Francisco;USA; 96082.90 ; 85559.12 ; 10523.78 ; 48105.19 ; 37453.93 
